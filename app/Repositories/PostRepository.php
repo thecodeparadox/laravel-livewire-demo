@@ -14,6 +14,7 @@ interface PostRepositoryInterface
 {
   public function create(array $userData): void;
   public function update(array $userData = []): void;
+  public function getBySlug(string $slug): Post;
   public function getByUserId(int $userId): Collection;
   public function getById(int $id): Post | null;
   public function deleteById(int $id): void;
@@ -44,6 +45,11 @@ class PostRepository implements PostRepositoryInterface
       ->limit(5)
       ->skip(0)
       ->get();
+  }
+
+  public function getBySlug(string $slug): Post
+  {
+    return Post::where('slug', $slug)->first();
   }
 
   public function getById(int $id): Post | null

@@ -17,9 +17,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users');
             $table->string('title')->nullable(false);
+            $table->string('slug')->nullable(false);
             $table->longText('content')->nullable();
-            $table->json('tags');
             $table->enum('status', ['DRAFT', 'UNPUBLISHED', 'PUBLISHED'])->default('DRAFT');
+            $table->timestamp('published_at')->nullable();
             $table->smallInteger('likes');
             $table->timestamps();
         });
@@ -32,6 +33,7 @@ return new class extends Migration
      */
     public function down()
     {
+        Schema::disableForeignKeyConstraints();
         Schema::dropIfExists('posts');
     }
 };

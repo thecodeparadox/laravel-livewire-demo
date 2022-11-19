@@ -31,5 +31,6 @@ Route::prefix('user')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('posts')->group(function () {
         Route::get('/', [PostController::class, 'index'])->name('posts.listing');
+        Route::get('/{:slug}', [PostController::class, 'view'])->name('posts.view');
     });
 });

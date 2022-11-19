@@ -2,8 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Post;
+use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 
@@ -12,6 +15,21 @@ use Illuminate\Support\Str;
  */
 class PostFactory extends Factory
 {
+    /**
+     * Attach Tags to Post
+     *
+     * @return void
+     */
+    public function configure()
+    {
+        // $tags = Tag::all()->pluck('id')->toArray();
+        return $this->afterCreating(function (Post $post) {
+            $post->tags()->attach(
+                Tag::inRandomOrder()->limit(5)->get()->pluck('id')->toArray()
+            );
+        });
+    }
+
     /**
      * Define the model's default state.
      *
@@ -26,8 +44,7 @@ class PostFactory extends Factory
             'user_id' => User::factory(),
             'title' => $title,
             'slug' => $slug,
-            'content' => fake()->paragraph(),
-            'tags' => json_encode(fake()->words(5)), // in DB its JSON type
+            'content' => fake()->text(500),
             'status' => fake()->randomElement(['DRAFT', 'PUBLISHED', 'UNPUBLISHED']),
             'likes' => fake()->randomNumber(3)
         ];

@@ -13,9 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('posts', function (Blueprint $table) {
-            $table->string('slug')->nullable(false)->after('title');
-            $table->timestamp('published_at')->nullable()->after('status');
+        Schema::create('tags', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
         });
     }
 
@@ -26,9 +28,7 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('posts', function (Blueprint $table) {
-            $table->dropColumn('slug');
-            $table->dropColumn('published_at');
-        });
+        Schema::disableForeignKeyConstraints();
+        Schema::dropIfExists('tags');
     }
 };

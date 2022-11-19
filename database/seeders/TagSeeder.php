@@ -2,10 +2,11 @@
 
 namespace Database\Seeders;
 
+use App\Models\Tag;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class PostSeeder extends Seeder
+class TagSeeder extends Seeder
 {
     use WithoutModelEvents;
 
@@ -16,6 +17,6 @@ class PostSeeder extends Seeder
      */
     public function run()
     {
-        //
+        Tag::factory()->count(50)->create();
     }
 }

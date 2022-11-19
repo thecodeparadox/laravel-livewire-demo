@@ -22,12 +22,12 @@
                         <li>
                             <a class="dropdown-item" href="#">Create New Post</a>
                         </li>
-                        <li>
+                        {{-- <li>
                             <hr class="dropdown-divider">
                         </li>
                         <li>
                             <a class="dropdown-item" href="#">Something else here</a>
-                        </li>
+                        </li> --}}
                     </ul>
                 </li>
                 @endauth

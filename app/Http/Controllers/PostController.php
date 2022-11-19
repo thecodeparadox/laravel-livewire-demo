@@ -20,4 +20,8 @@ class PostController extends Controller
         $posts = $this->post->getByUserId(Auth::user()->id);
         return view('post.listing', compact('posts'));
     }
+
+    public function view(string $slug = '')
+    {
+    }
 }
