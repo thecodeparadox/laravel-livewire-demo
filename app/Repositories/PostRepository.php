@@ -15,7 +15,7 @@ interface PostRepositoryInterface
   public function create(array $userData): void;
   public function update(array $userData = []): void;
   public function getBySlug(string $slug): Post;
-  public function getByUserId(int $userId): Collection;
+  public function getByUserId(int $userId, string $search = ''): Collection;
   public function getById(int $id): Post | null;
   public function deleteById(int $id): void;
 }
@@ -37,12 +37,14 @@ class PostRepository implements PostRepositoryInterface
     //
   }
 
-  public function getByUserId(int $userId): Collection
+  public function getByUserId(int $userId, string $search = ''): Collection
   {
-    return Post::where('user_id', $userId)
-      // ->with('author')
-      ->latest()
-      ->limit(5)
+    $builder =  Post::where('user_id', $userId);
+    if ($search) {
+      $builder = $builder->where('title', 'LIKE', "%{$search}%");
+    }
+    return $builder->latest()
+      ->limit(2)
       ->skip(0)
       ->get();
   }

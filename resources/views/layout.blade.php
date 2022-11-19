@@ -23,7 +23,7 @@
     <body class="container-fluid ">
         <div class="container">
             <header class="row mt-3 mb-2">
-                <h2>Simple Laravel Demo</h2>
+                <h2>{{ __('Simple Laravel Demo Blog') }}</h2>
                 <section>
                     @include('nav')
                 </section>

@@ -22,11 +22,13 @@ class PostFactory extends Factory
      */
     public function configure()
     {
-        // $tags = Tag::all()->pluck('id')->toArray();
-        return $this->afterCreating(function (Post $post) {
-            $post->tags()->attach(
-                Tag::inRandomOrder()->limit(5)->get()->pluck('id')->toArray()
-            );
+        // $tags = Tag::inRandomOrder()->limit(5)->get()->pluck('id')->toArray();
+
+        $allTags = Tag::all()->pluck('id')->toArray();
+        $tags = Arr::random($allTags, 5);
+
+        return $this->afterCreating(function (Post $post) use ($tags) {
+            $post->tags()->attach($tags);
         });
     }
 
@@ -39,9 +41,8 @@ class PostFactory extends Factory
     {
         $title = fake()->sentence();
         $slug = Str::slug($title);
-
         return [
-            'user_id' => User::factory(),
+            'user_id' => User::count() ? User::inRandomOrder()->first()->id : User::factory(),
             'title' => $title,
             'slug' => $slug,
             'content' => fake()->text(500),
