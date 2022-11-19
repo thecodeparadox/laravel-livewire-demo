@@ -40,4 +40,17 @@ class PostController extends Controller
         $post = $this->post->getBySlug($slug);
         return view('post.view', compact('post'));
     }
+
+    /**
+     * Post Edit
+     *
+     * @param string $slug
+     * @return View|Factory
+     * @throws BindingResolutionException
+     */
+    public function edit(string $slug = '')
+    {
+        $post = $this->post->getBySlug($slug);
+        return view('post.edit', compact('post'));
+    }
 }

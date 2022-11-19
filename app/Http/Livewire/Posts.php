@@ -15,7 +15,7 @@ class Posts extends Component
     private PostRepository $postRepo;
     public string $search = '';
     protected $paginationTheme = 'bootstrap';
-    public $pageSize = 2;
+    public $pageSize = 3;
 
     /**
      * Reset pagination

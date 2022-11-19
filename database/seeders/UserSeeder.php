@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
     {
         User::factory()
             ->count(5)
-            ->hasPosts(3)
+            ->hasPosts(10)
             ->create();
     }
 }

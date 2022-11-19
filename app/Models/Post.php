@@ -13,6 +13,11 @@ class Post extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'created_at' => 'datetime:F, jS, Y g:i A',
+        'updated_at' => 'datetime:F, jS, Y g:i A'
+    ];
+
     /**
      * Every post has one author
      *
@@ -33,6 +38,11 @@ class Post extends Model
         return $this->belongsToMany(Tag::class);
     }
 
+    /**
+     * Return Short Content (excerpt)
+     *
+     * @return Attribute
+     */
     public function shortContent(): Attribute
     {
         return Attribute::make(

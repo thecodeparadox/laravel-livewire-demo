@@ -31,8 +31,9 @@ Route::prefix('user')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('posts')->group(function () {
         Route::get('/', [PostController::class, 'index'])->name('posts.listing');
-        Route::get('/create', [PostController::class, 'create-or-edit'])->name('posts.create');
+        Route::get('/create', [PostController::class, 'create'])->name('posts.create');
         Route::get('/{slug}', [PostController::class, 'view'])->name('posts.view');
-        Route::get('/edit/{slug}', [PostController::class, 'create-or-edit'])->name('posts.edit');
+        Route::get('/edit/{slug}', [PostController::class, 'edit'])->name('posts.edit');
+        Route::post('/store', [PostController::class, 'store'])->name('posts.store');
     });
 });

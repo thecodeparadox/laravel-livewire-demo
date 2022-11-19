@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\PostStatus;
 use App\Models\Post;
 use App\Models\Tag;
 use App\Models\User;
@@ -24,7 +25,7 @@ class PostFactory extends Factory
     {
         // $tags = Tag::inRandomOrder()->limit(5)->get()->pluck('id')->toArray();
 
-        $allTags = Tag::all()->pluck('id')->toArray();
+        $allTags = Tag::all()->pluck('id')->shuffle()->toArray();
         $tags = Arr::random($allTags, 5);
 
         return $this->afterCreating(function (Post $post) use ($tags) {
@@ -45,8 +46,8 @@ class PostFactory extends Factory
             'user_id' => User::count() ? User::inRandomOrder()->first()->id : User::factory(),
             'title' => $title,
             'slug' => $slug,
-            'content' => fake()->text(500),
-            'status' => fake()->randomElement(['DRAFT', 'PUBLISHED', 'UNPUBLISHED']),
+            'content' => fake()->text(1000),
+            'status' => fake()->randomElement(PostStatus::getEnumValues()),
             'likes' => fake()->randomNumber(3)
         ];
     }
