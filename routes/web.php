@@ -28,7 +28,7 @@ Route::prefix('user')->group(function () {
     Route::post('/store', [UserController::class, 'store'])->name('user.store');
 });
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'web.auth'])->group(function () {
     Route::prefix('posts')->group(function () {
         Route::get('/', [PostController::class, 'index'])->name('posts.listing');
         Route::get('/create', [PostController::class, 'create'])->name('posts.create');

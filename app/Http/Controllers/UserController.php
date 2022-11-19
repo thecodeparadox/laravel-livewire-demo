@@ -108,12 +108,14 @@ class UserController extends Controller
             return back();
         }
 
-        Auth::logout();
+        // check if active
+        $user = Auth::user();
+        $isActive = $user && $user->is_active;
+        $status = !$isActive ? 'error' : 'info';
+        $message = !$isActive ? __('auth.inactive_account') : __('auth.logout');
 
-        // recommended
-        $req->session()->invalidate();
-        $req->session()->regenerateToken();
+        $this->logoutUser($req);
 
-        return redirect('/');
+        return redirect()->route('user.login')->with($status, $message);
     }
 }

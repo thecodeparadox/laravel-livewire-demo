@@ -2,14 +2,25 @@
 
 namespace App\Traits;
 
-use App\Models\User;
-use Illuminate\Contracts\Queue\EntityNotFoundException;
-use Illuminate\Database\RecordsNotFoundException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use RuntimeException;
 
 trait AppAuthTrait
 {
-    //
+    /**
+     * User Logout
+     *
+     * @param Request $req
+     * @return void
+     * @throws RuntimeException
+     */
+    public function logoutUser(Request $req): void
+    {
+        Auth::logout();
+
+        // recommended
+        $req->session()->invalidate();
+        $req->session()->regenerateToken();
+    }
 }
