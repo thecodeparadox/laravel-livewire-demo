@@ -3,64 +3,105 @@
 namespace App\Repositories;
 
 use App\Models\Post;
-use Illuminate\Support\Facades\Hash;
-use Carbon\Carbon;
-
-use App\Models\User;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Auth;
 
 interface PostRepositoryInterface
 {
-  public function create(array $userData): void;
-  public function update(array $userData = []): void;
-  public function getBySlug(string $slug): Post;
-  public function getByUserId(int $userId, string $search = ''): Collection;
-  public function getById(int $id): Post | null;
-  public function deleteById(int $id): void;
+    public function upsert(array $data, int | null $postId = null): Post;
+    public function getBySlug(string $slug): Post | null;
+    public function getByUserId(int $userId, string $search = ''): Collection;
+    public function getById(string | int $id): Post | null;
+    public function deleteById(int $id): int;
 }
 
 class PostRepository implements PostRepositoryInterface
 {
-  /**
-   * Create new user.
-   *
-   * @param array User data
-   */
-  public function create(array $userData): void
-  {
-    //
-  }
-
-  public function update(array $userData = []): void
-  {
-    //
-  }
-
-  public function getByUserId(int $userId, string $search = ''): Collection
-  {
-    $builder =  Post::where('user_id', $userId);
-    if ($search) {
-      $builder = $builder->where('title', 'LIKE', "%{$search}%");
+    /**
+     * Create/Update a post
+     *
+     * @param array $data
+     * @return Post
+     */
+    public function upsert(array $data, int | null $postId = null): Post
+    {
+        return Post::updateOrCreate($data, ['id' => $postId]);
     }
-    return $builder->latest()
-      ->limit(2)
-      ->skip(0)
-      ->get();
-  }
 
-  public function getBySlug(string $slug): Post
-  {
-    return Post::where('slug', $slug)->first();
-  }
+    /**
+     * Get Posts for an User with search ability
+     *
+     * @param int $userId
+     * @param string $search
+     * @return Collection
+     */
+    public function getByUserId(int $userId, string $search = ''): Collection
+    {
+        $builder =  Post::where('user_id', $userId);
+        if ($search) {
+            $builder = $builder->where('title', 'LIKE', "%{$search}%");
+        }
+        return $builder->latest()
+            ->limit(2)
+            ->skip(0)
+            ->get();
+    }
 
-  public function getById(int $id): Post | null
-  {
-    return User::findById($id);
-  }
+    /**
+     * Get a Post by Slug
+     *
+     * @param string $slug
+     * @return Post | null
+     */
+    public function getBySlug(string $slug): Post | null
+    {
+        return Post::where('slug', $slug)
+            ->where('user_id', Auth::user()->id)
+            ->firstOrFail();
+    }
 
-  public function deleteById(int $id): void
-  {
-    //
-  }
+    /**
+     * Get Post by Id
+     *
+     * @param int $postId
+     * @return Post|null
+     */
+    public function getById(string | int $postId): Post | null
+    {
+        return Post::where('id', $postId)
+            ->where('user_id', Auth::user()->id)
+            ->first();
+    }
+
+    /**
+     * Delete Post By Id
+     *
+     * @param int $postId
+     * @return void
+     */
+    public function deleteById(int $postId): int
+    {
+        return Post::where('id', $postId)
+            ->where('user_id', Auth::user()->id)
+            ->delete();
+    }
+
+    /**
+     * Search Posts
+     *
+     * @param string $search
+     * @param int $pageSize
+     * @return mixed
+     */
+    public function searchPosts($search = '', $pageSize = 3)
+    {
+        $builder = Post::where('user_id', Auth::user()->id);
+        if ($search) {
+            return $builder->where('title', 'LIKE', '%' . $search . '%')
+                ->orderBy('updated_at', 'desc')
+                ->paginate();
+        }
+        return $builder->latest()->paginate($pageSize);
+    }
 }

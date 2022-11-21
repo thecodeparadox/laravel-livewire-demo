@@ -27,9 +27,29 @@ enum PostStatus: string
     };
   }
 
+  /**
+   * Get Post statues enum values
+   *
+   * @return array
+   */
   public static function getEnumValues(): array
   {
-    return array_map(fn (self $status) => $status->value, self::cases());
+    return array_map(fn (self $status) => strval($status->value), self::cases());
+  }
+
+  /**
+   * Get Status Case
+   *
+   * @param PostStatus|string $status
+   * @return string
+   */
+  public static function getCase(self | string $status): PostStatus
+  {
+    if (is_string($status)) {
+      $status = self::tryFrom($status);
+    }
+
+    return $status ?? self::DRAFT;
   }
 
   /**
@@ -41,9 +61,21 @@ enum PostStatus: string
   public static function getValue(self | string $status): string
   {
     if (is_string($status)) {
-      $status = self::from($status);
+      $status = self::getCase($status);
     }
 
     return $status->value;
+  }
+
+  /**
+   * Check if status matched
+   *
+   * @param PostStatus|string $status
+   * @param PostStatus|string $match
+   * @return bool
+   */
+  public static function is(self | string $status, self | string $match): bool
+  {
+    return self::getValue($status) === self::getValue($match);
   }
 }

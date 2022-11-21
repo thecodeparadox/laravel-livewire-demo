@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\PostTrait;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,11 +12,25 @@ use Illuminate\Support\Str;
 
 class Post extends Model
 {
-    use HasFactory;
+    use HasFactory, PostTrait;
 
     protected $casts = [
         'created_at' => 'datetime:F, jS, Y g:i A',
         'updated_at' => 'datetime:F, jS, Y g:i A'
+    ];
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'user_id',
+        'title',
+        'slug',
+        'content',
+        'status',
+        'published_at',
     ];
 
     /**
@@ -26,16 +41,6 @@ class Post extends Model
     public function author(): HasOne
     {
         return $this->hasOne(User::class);
-    }
-
-    /**
-     * The roles that belong to the user.
-     *
-     * @return BelongsToMany
-     */
-    public function tags(): BelongsToMany
-    {
-        return $this->belongsToMany(Tag::class);
     }
 
     /**

@@ -1,8 +1,14 @@
 <?php
 
+use App\Http\Controllers\MyTestController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
+use App\Http\Livewire\Post\Create as PostCreate;
+use App\Http\Livewire\Post\Update as PostUpdate;
+use App\Http\Livewire\Post\View as PostView;
+use App\Http\Livewire\Post\Listing as PostListing;
+use App\Http\Livewire\Posts;
+use App\Http\Livewire\Test;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,12 +34,19 @@ Route::prefix('user')->group(function () {
     Route::post('/store', [UserController::class, 'store'])->name('user.store');
 });
 
-Route::middleware(['auth:sanctum', 'web.auth'])->group(function () {
-    Route::prefix('posts')->group(function () {
-        Route::get('/', [PostController::class, 'index'])->name('posts.listing');
-        Route::get('/create', [PostController::class, 'create'])->name('posts.create');
-        Route::get('/{slug}', [PostController::class, 'view'])->name('posts.view');
-        Route::get('/edit/{slug}', [PostController::class, 'edit'])->name('posts.edit');
-        Route::post('/store', [PostController::class, 'store'])->name('posts.store');
-    });
+// Route::middleware(['auth:sanctum', 'web.auth'])->group(function () {
+//     // Route::get('/posts', [PostController::class, 'index'])->name('posts');
+
+//     // livewire
+//     Route::get('/posts', Posts::class)->name('posts');
+//     Route::get('/posts/create', Posts::class)->name('post.create');
+//     Route::get('/posts/view/{id}', Posts::class)->name('post.view');
+//     Route::get('/posts/edit/{id}', Posts::class)->name('post.edit');
+// });
+
+Route::prefix('posts')->group(function () {
+    Route::get('/', PostListing::class)->name('posts');
+    Route::get('/posts/create', PostCreate::class)->name('post.create');
+    Route::get('/posts/edit/{id}', PostUpdate::class)->name('post.edit');
+    Route::get('/posts/view/{id}', PostView::class)->name('post.view');
 });

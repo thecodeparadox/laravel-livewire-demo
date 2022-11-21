@@ -2,12 +2,21 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\User;
+use App\Traits\AppAuthTrait;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class WebAccess
 {
+    use AppAuthTrait;
+
+    protected $except = [
+        'user/login',
+        'user/signup',
+    ];
+
     /**
      * Handle an incoming request.
      *
@@ -19,7 +28,8 @@ class WebAccess
     {
         $user = Auth::user();
 
-        if (!$user) {
+        if (!$user || !$this->authAttempt($user)) {
+            $this->logoutUser();
             return redirect()
                 ->route('user.login')
                 ->with('error', __('auth.session_expired'));

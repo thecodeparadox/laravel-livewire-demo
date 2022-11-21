@@ -50,15 +50,15 @@ class UserController extends Controller
             $user = $this->user->getByEmail($data['email']);
 
             if ($user && !$user->is_active) {
-                return back()->with('error', 'Account Inactive. Please contact admin.');
+                return back()->with('error', __('auth.login_failed_inactive'));
             }
 
             if (Auth::attempt([...$data, 'is_active' => 1], $remember)) {
                 $req->session()->regenerate();
-                return redirect()->intended('posts');
+                return redirect()->route('posts');
             }
 
-            return back()->with('error', 'Wrong Email/Password combination.');
+            return back()->with('error', __('auth.invalid_credentials'));
         }
 
         return view('user.login');
@@ -86,12 +86,12 @@ class UserController extends Controller
         $error = '';
         try {
             $this->user->create($req->all());
-            return redirect('user/login')->with('info', 'Sign up successfull!');
+            return redirect()->route('user.login')->with('info', __('auth.signup_success'));
         } catch (Exception $e) {
             $error = $e->getMessage();
         }
 
-        return back()->with('error', $error ?? 'Something went wrong');
+        return back()->with('error', $error ?? __('auth.signup_failed'));
     }
 
     /**

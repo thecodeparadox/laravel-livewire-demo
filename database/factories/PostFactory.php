@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Enums\PostStatus;
 use App\Models\Post;
-use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Arr;
@@ -16,23 +15,6 @@ use Illuminate\Support\Str;
  */
 class PostFactory extends Factory
 {
-    /**
-     * Attach Tags to Post
-     *
-     * @return void
-     */
-    public function configure()
-    {
-        // $tags = Tag::inRandomOrder()->limit(5)->get()->pluck('id')->toArray();
-
-        $allTags = Tag::all()->pluck('id')->shuffle()->toArray();
-        $tags = Arr::random($allTags, 5);
-
-        return $this->afterCreating(function (Post $post) use ($tags) {
-            $post->tags()->attach($tags);
-        });
-    }
-
     /**
      * Define the model's default state.
      *
@@ -47,8 +29,7 @@ class PostFactory extends Factory
             'title' => $title,
             'slug' => $slug,
             'content' => fake()->text(1000),
-            'status' => fake()->randomElement(PostStatus::getEnumValues()),
-            'likes' => fake()->randomNumber(3)
+            'status' => fake()->randomElement(PostStatus::getEnumValues())
         ];
     }
 }

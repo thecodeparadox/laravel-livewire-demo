@@ -2,11 +2,12 @@
 
 namespace App\Http\Requests;
 
+use App\Traits\AppAuthTrait;
 use Illuminate\Foundation\Http\FormRequest;
 
 class LoginRequest extends FormRequest
 {
-  // protected $redirectRoute  = 'user.login';
+  use AppAuthTrait;
 
   /**
    * Determine if the user is authorized to make this request.
@@ -29,9 +30,6 @@ class LoginRequest extends FormRequest
       return [];
     }
 
-    return [
-      'email'         => 'required|email',
-      'password'      => 'required|min:2'
-    ];
+    return $this->getLoginValidationRules();
   }
 }

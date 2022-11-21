@@ -2,12 +2,12 @@
 
 namespace App\Http\Requests;
 
-use App\Traits\AppAuthTrait;
+use App\Traits\PostTrait;
 use Illuminate\Foundation\Http\FormRequest;
 
-class SignupRequest extends FormRequest
+class PostRequest extends FormRequest
 {
-  use AppAuthTrait;
+  use PostTrait;
 
   /**
    * Determine if the user is authorized to make this request.
@@ -26,6 +26,6 @@ class SignupRequest extends FormRequest
    */
   public function rules()
   {
-    return $this->getSignupValidationRules();
+    return $this->getValidationRules();
   }
 }

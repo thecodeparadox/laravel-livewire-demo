@@ -22,7 +22,6 @@ return new class extends Migration
             $table->longText('content')->nullable();
             $table->enum('status', PostStatus::getEnumValues())->default(PostStatus::DRAFT->value);
             $table->timestamp('published_at')->nullable();
-            $table->smallInteger('likes');
             $table->timestamps();
         });
     }

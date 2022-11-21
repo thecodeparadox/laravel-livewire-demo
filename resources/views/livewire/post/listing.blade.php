@@ -19,14 +19,14 @@
     </div>
     <div class="row">
         <div class="posts col-12">
-            @if ($posts->isNotEmpty())
+            @if ($this->posts->isNotEmpty())
                 <div class="posts-wrap">
-                    @foreach ($posts as $post)
+                    @foreach ($this->posts as $post)
                         @include('post.view')
                     @endforeach
                 </div>
                 <div aria-label="Page navigation">
-                    {{ $posts->links('pagination::custom-pagination') }}
+                    {{ $this->posts->links('pagination::custom-pagination') }}
                 </div>
             @else
                 <div class="alert alert-warning">{{ __('No Post found') }}</div>

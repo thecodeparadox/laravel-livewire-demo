@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand active" aria-current="page" href="{{ route('home') }}">
+        <a class="navbar-brand active" aria-current="page" href="{{ route('posts') }}">
             <i class="bi bi-house-door-fill"></i>
         </a>
 
@@ -13,27 +13,15 @@
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 @auth
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false"> {{ __('Posts') }} </a>
-                        <ul class="dropdown-menu">
-                            <li>
-                                <a class="dropdown-item" href="{{ route('posts.listing') }}">
-                                    {{ __('Show Posts') }}
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item" href="#">{{ __('Create New Post') }}</a>
-                            </li>
-                        </ul>
+                        <strong class="d-inline-block">
+                            {{ __('Welcome, ') . Auth::user()->full_name }}!
+                        </strong>
                     </li>
                 @endauth
             </ul>
 
             @auth
                 <div class="ml-3 text-end">
-                    <strong class="d-inline-block">
-                        {{ __('Welcome, ') . Auth::user()->full_name }}!
-                    </strong>
                     <a href="{{ route('user.logout') }}" class="btn btn-warning btn-sm ml-3 d-inline-block">
                         <i class="bi bi-sign-turn-left-fill"></i>
                         {{ __('Logout') }}
