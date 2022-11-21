@@ -63,6 +63,11 @@
         // app main layout in order to ease of access from both places
         //
         //
+        const modalEl = document.getElementById('staticBackdrop');
+        const modalInst = new bootstrap.Modal('#staticBackdrop', {
+            keyboard: false
+        });
+
         document.addEventListener('alpine:init', () => {
             Alpine.store('post', {
                 postId: null,
@@ -75,9 +80,8 @@
                     this.agreed = true;
                     this.isDeleting = true;
 
-                    Livewire.emit('performDelete', postId => {
-
-                    });
+                    Livewire.emit('purgePost', this.postId);
+                    modalInst.hide();
                 },
                 reset() {
                     this.setPostId(null);
@@ -87,19 +91,12 @@
             });
         });
 
-        const modalBtn = document.querySelector('.post-delete-modal-trigger-btn');
-        const modal = document.getElementById('staticBackdrop');
-        const modalInst = new bootstrap.Modal('#staticBackdrop', {
-            keyboard: false
-        });
-
-        modal.addEventListener('hidden.bs.modal', event => Alpine.store('post').reset());
-
-        modalBtn.onclick = function() {
-            const postId = this.getAttribute('data-post-id');
+        Livewire.on('askPermission', postId => {
             Alpine.store('post').setPostId(postId);
             modalInst.show();
-        }
+        })
+
+        modalEl.addEventListener('hidden.bs.modal', event => Alpine.store('post').reset());
     </script>
 </body>
 

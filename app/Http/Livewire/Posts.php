@@ -8,16 +8,24 @@ use App\Repositories\PostRepository;
 use App\Traits\PostTrait;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Psr\Container\NotFoundExceptionInterface;
+use Psr\Container\ContainerExceptionInterface;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
+use Throwable;
 
 class Posts extends Component
 {
     use WithPagination, PostTrait;
 
     protected PostRepository $postRepo;
+    protected $listeners = ['purgePost'];
 
     // Post fields
     public $title = '';
@@ -27,7 +35,6 @@ class Posts extends Component
 
     // tracking props
     public $search;
-    public $posts;
     public $post;
     public $postId = '';
     public $opMode = 'listing';
@@ -40,7 +47,6 @@ class Posts extends Component
 
         $this->postStatuses = PostStatus::getEnumValues();
         $this->postRepo = new PostRepository();
-        $this->posts = Post::where('user_id', Auth::user()->id)->latest()->paginate(6);
     }
 
     protected function rules(): array
@@ -48,6 +54,22 @@ class Posts extends Component
         return $this->getPostValidationRules();
     }
 
+    public function getPostsProperty()
+    {
+        return $this->postRepo->searchPosts($this->search);
+    }
+
+    /**
+     * Component mount lifecycle hook.
+     * Making some rendering decision here
+     *
+     * @param string $id
+     * @return void
+     * @throws BindingResolutionException
+     * @throws RouteNotFoundException
+     * @throws NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     */
     public function mount($id = ''): void
     {
         $this->postId = $id;
@@ -72,68 +94,114 @@ class Posts extends Component
         }
 
         $this->refreshProperties();
-        $this->posts = $this->postRepo->searchPosts();
     }
 
+    /**
+     * Render the component
+     *
+     * @return mixed
+     * @throws BindingResolutionException
+     */
     public function render(): mixed
     {
-        // $this->posts = $this->postRepo->searchPosts();
         return view('livewire.posts')->extends('layouts.app');
     }
 
-    public function updatedPost()
-    {
-        session()->forget(['error', 'success']);
-    }
+    /**
+     * Validate each form field
+     *
+     * !NOTE: COMMENT OUT DUE TO ITS EACH EVENT TRIP TO SERVER
+     *
+     * @param mixed $propertyName
+     * @return void
+     * @throws Throwable
+     * @throws ValidationException
+     */
+    // public function updated($propertyName): void
+    // {
+    //     $this->validateOnly($propertyName);
+    // }
 
-    public function updated($propertyName): void
-    {
-        $this->validateOnly($propertyName);
-    }
-
+    /**
+     * On pagination change reset reactive props (some exception)
+     *
+     * @return void
+     */
     public function resetFilters(): void
     {
         $this->resetExcept(['opMode']);
     }
 
+    /**
+     * Update Slug on title input change
+     *
+     * @return void
+     */
     public function updateSlug(): void
     {
         $this->slug = Str::slug($this->title);
     }
 
+    /**
+     * Save Post on form submit
+     *
+     * @return RedirectResponse
+     * @throws NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     * @throws Throwable
+     */
     public function savePost()
     {
         $action = ucwords($this->opMode);
-        try {
-            $this->validate();
-            $data = [
-                'user_id' => $this->post->user_id ?? Auth::user()->id,
-                'title' => $this->title,
-                'content' => $this->content,
-                'slug' => $this->slug,
-                'status' => $this->status,
-                'published_at' => PostStatus::is($this->status, PostStatus::PUBLISHED) ? Carbon::now() : null
-            ];
+        $this->validate();
 
-            $post = $this->postRepo->upsert($data, $this->post->id ?? null);
+        $data = [
+            'user_id' => $this->post->user_id ?? Auth::user()->id,
+            'title' => $this->title,
+            'content' => $this->content,
+            'slug' => $this->slug,
+            'status' => $this->status,
+            'published_at' => PostStatus::is($this->status, PostStatus::PUBLISHED) ? Carbon::now() : null
+        ];
 
-            return redirect()
-                ->route('post.view', ['id' => $post->id])
-                ->with('success', __('Post ' . $action . ' successfully'));
-        } catch (Exception $e) {
-            dd($e);
-            session()->put('error', __($e->getMessage() ?? $action . ' Failed'));
-        }
+        $post = $this->postRepo->upsert($data, $this->post->id ?? null);
+
+        return redirect()
+            ->route('posts')
+            ->with('success', __('Post ' . $action . ' successfully'));
     }
 
+    /**
+     * Perform Delete Post
+     *
+     * @param mixed $postId
+     * @return RedirectResponse
+     * @throws BindingResolutionException
+     * @throws RouteNotFoundException
+     * @throws NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     */
     public function performDelete($postId)
     {
         $this->postId = $postId;
-        dd($this->postId);
+        $this->emit('askPermission', $this->postId);
+    }
+
+    public function purgePost($postId)
+    {
         $this->postRepo->deleteById($this->postId);
         return redirect()->route('posts')->with('success', __('Post deleted successfully'));
     }
 
+    /**
+     * For View/Edit Pull target post by ID param or redirect on error
+     *
+     * @return void|RedirectResponse
+     * @throws BindingResolutionException
+     * @throws RouteNotFoundException
+     * @throws NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     */
     private function fetchPostOrFail()
     {
         if (!$this->postId) {
@@ -146,6 +214,15 @@ class Posts extends Component
         }
     }
 
+    /**
+     * Reset all reactive props
+     *
+     * @return void
+     * @throws BindingResolutionException
+     * @throws RouteNotFoundException
+     * @throws NotFoundExceptionInterface
+     * @throws ContainerExceptionInterface
+     */
     private function refreshProperties()
     {
         $this->fetchPostOrFail();

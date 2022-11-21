@@ -4,14 +4,13 @@ namespace App\Repositories;
 
 use App\Models\Post;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 
 interface PostRepositoryInterface
 {
     public function upsert(array $data, int | null $postId = null): Post;
     public function getBySlug(string $slug): Post | null;
-    public function getByUserId(int $userId, string $search = ''): Collection;
+    public function getByUserId(int $userId, string $search = '', int $pageSize = 10): Collection;
     public function getById(string | int $id): Post | null;
     public function deleteById(int $id): int;
 }
@@ -26,7 +25,7 @@ class PostRepository implements PostRepositoryInterface
      */
     public function upsert(array $data, int | null $postId = null): Post
     {
-        return Post::updateOrCreate($data, ['id' => $postId]);
+        return Post::updateOrCreate(['id' => $postId], $data);
     }
 
     /**
@@ -36,15 +35,14 @@ class PostRepository implements PostRepositoryInterface
      * @param string $search
      * @return Collection
      */
-    public function getByUserId(int $userId, string $search = ''): Collection
+    public function getByUserId(int $userId, string $search = '', int $pageSize = 10): Collection
     {
         $builder =  Post::where('user_id', $userId);
         if ($search) {
             $builder = $builder->where('title', 'LIKE', "%{$search}%");
         }
         return $builder->latest()
-            ->limit(2)
-            ->skip(0)
+            ->limit(10)
             ->get();
     }
 
@@ -102,6 +100,6 @@ class PostRepository implements PostRepositoryInterface
                 ->orderBy('updated_at', 'desc')
                 ->paginate();
         }
-        return $builder->latest()->paginate($pageSize);
+        return $builder->orderBy('updated_at', 'desc')->paginate($pageSize);
     }
 }

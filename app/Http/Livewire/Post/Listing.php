@@ -2,9 +2,7 @@
 
 namespace App\Http\Livewire\Post;
 
-use App\Models\Post;
 use App\Repositories\PostRepository;
-use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class Listing extends Component

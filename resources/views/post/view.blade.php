@@ -20,7 +20,8 @@
             @else
                 <p>
                     {{ __($post->short_content) }}
-                    <a href="{{ route('post.view', ['id' => $post->id]) }}" class="btn btn-sm" title="View More">
+                    <a href="{{ route('post.view', ['id' => $post->id]) }}" class="btn btn-sm text-primary"
+                        title="View More">
                         <i class="bi bi-eye-fill"></i>
                     </a>
                 </p>

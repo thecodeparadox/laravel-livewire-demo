@@ -11,8 +11,8 @@
             </div>
         </div>
         <div class="col-4">
-            <form class="position-relative"" role="search" action="{{ route('posts') }}">
-                <input class="form-control me-2" type="text" name="search"
+            <form class="position-relative"" role="search">
+                <input class="form-control me-2" type="text" name="search" wire:model="search"
                     placeholder="Search By Title and Hit Return" aria-label="Search" value="{{ $search }}">
             </form>
         </div>

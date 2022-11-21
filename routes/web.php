@@ -34,19 +34,19 @@ Route::prefix('user')->group(function () {
     Route::post('/store', [UserController::class, 'store'])->name('user.store');
 });
 
-// Route::middleware(['auth:sanctum', 'web.auth'])->group(function () {
-//     // Route::get('/posts', [PostController::class, 'index'])->name('posts');
+Route::prefix('posts')->group(function () {
+    Route::get('/', Posts::class)->name('posts');
+    Route::get('create', Posts::class)->name('post.create');
+    Route::get('view/{id}', Posts::class)->name('post.view');
+    Route::get('edit/{id}', Posts::class)->name('post.edit');
+});
 
-//     // livewire
-//     Route::get('/posts', Posts::class)->name('posts');
-//     Route::get('/posts/create', Posts::class)->name('post.create');
-//     Route::get('/posts/view/{id}', Posts::class)->name('post.view');
-//     Route::get('/posts/edit/{id}', Posts::class)->name('post.edit');
+// Route::middleware(['auth:sanctum', 'web.auth'])->group(function () {
 // });
 
-Route::prefix('posts')->group(function () {
-    Route::get('/', PostListing::class)->name('posts');
-    Route::get('/posts/create', PostCreate::class)->name('post.create');
-    Route::get('/posts/edit/{id}', PostUpdate::class)->name('post.edit');
-    Route::get('/posts/view/{id}', PostView::class)->name('post.view');
-});
+// Route::prefix('posts')->group(function () {
+//     Route::get('/', PostListing::class)->name('posts');
+//     Route::get('create', PostCreate::class)->name('post.create');
+//     Route::get('edit/{id}', PostUpdate::class)->name('post.edit');
+//     Route::get('view/{id}', PostView::class)->name('post.view');
+// });

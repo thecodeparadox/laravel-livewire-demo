@@ -1,8 +1,15 @@
 <div class="posts-listing">
     <div class="row justify-content-between mt-3 mb-3">
         <div class="col-8 d-flex">
-            <div class="flex-grow-1 hstack">
+            <div class="flex-grow-1 hstack gap-3">
                 <h4>{{ 'Posts Listing' }}</h4>
+                <div wire:loading class="ml-3">
+                    <div class="text-center">
+                        <div class="spinner-border spinner-border-sm" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div>
                 <a href="{{ route('post.create') }}" class="btn btn-primary">
@@ -11,9 +18,10 @@
             </div>
         </div>
         <div class="col-4">
-            <form class="position-relative"" role="search" action="{{ route('posts') }}">
-                <input class="form-control me-2" type="text" name="search"
-                    placeholder="Search By Title and Hit Return" aria-label="Search" value="{{ $search }}">
+            <form class="position-relative"" role="search">
+                <input class="form-control me-2" type="text" name="search" wire:model.debounce.300ms="search"
+                    placeholder="Search By Title and Hit Return" aria-label="Search" value="{{ $search }}"
+                    autocomplete="off">
             </form>
         </div>
     </div>

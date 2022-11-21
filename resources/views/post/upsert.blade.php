@@ -7,20 +7,20 @@
         <div class="mb-2">
             <label for="title" class="form-label">{{ __('Title') }}</label>
             <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title"
-                aria-describedby="title" maxlength="255" value="{{ $title }}" required wire:model="title"
-                wire:keyup="updateSlug">
+                aria-describedby="title" maxlength="255" value="{{ $title }}" required
+                wire:model.debounce.500ms="title" wire:keyup="updateSlug">
             @error('title')
                 <div class="invalid-feedback">{{ __($message) }}</div>
             @enderror
         </div>
-        <div class="mt-2 mb-3 @error('title') text-danger @else text-success @enderror">
+        <div class="mt-2 mb-3 text-success">
             <strong>Slug: </strong> {{ $slug }}
             <input type="hidden" name="slug" value="{{ $slug }}" required maxlength="255">
         </div>
         <div class="mb-3">
             <label for="content" class="form-label">{{ __('Content') }}</label>
             <textarea class="form-control @error('content') is-invalid @enderror" id="content" name="content"
-                aria-describedby="content" required rows="10" wire:model="content">{{ $content }}</textarea>
+                aria-describedby="content" required rows="10" wire:model.defer="content">{{ $content }}</textarea>
             @error('content')
                 <div class="invalid-feedback">{{ __($message) }}</div>
             @enderror

@@ -31,6 +31,7 @@ class Post extends Model
         'content',
         'status',
         'published_at',
+        'updated_at'
     ];
 
     /**
